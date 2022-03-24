@@ -3,22 +3,22 @@
  
 typedef struct bucket
 {
-	int number;    //±£´æ1µÄ¸öÊı
-	int timestamp;    //±£´æÊ±¼ä´Á
+	int number;    //ä¿å­˜1çš„ä¸ªæ•°
+	int timestamp;    //ä¿å­˜æ—¶é—´æˆ³
 	struct bucket *next;
 }bucket,*pbucket;
  
-int windows;    //´°¿Ú´óĞ¡
-int buckets;    //Í°¸öÊı
-int time;       //ÈÎÒâÊ±¼ä
-int numbers;    //Êı¾İÁ÷
-int count;      //¾«È·¼ÆÊı
+int windows;    //çª—å£å¤§å°
+int buckets;    //æ¡¶ä¸ªæ•°
+int time;       //ä»»æ„æ—¶é—´
+int numbers;    //æ•°æ®æµ
+int count;      //ç²¾ç¡®è®¡æ•°
  
 int judge(pbucket h,int n);
  
 pbucket memory()
 {
-	int sign;    //ÓÃÓÚ±£´æ¶Á³öÀ´µÄÊı
+	int sign;    //ç”¨äºä¿å­˜è¯»å‡ºæ¥çš„æ•°
 	int i = 1;
  
 	FILE *fp;
@@ -30,32 +30,32 @@ pbucket memory()
 	count = 0;
 	numbers = 0;
  
-	printf("ÇëÊäÈë´°¿ÚµÄ´óĞ¡\n");
+	printf("è¯·è¾“å…¥çª—å£çš„å¤§å°\n");
 	scanf("%d",&windows);
-	printf("ÇëÊäÈë²é¿´µÄÊ±¼ä\n");
+	printf("è¯·è¾“å…¥æŸ¥çœ‹çš„æ—¶é—´\n");
 	scanf("%d",&time);
  
-	fp = fopen("E:\\´óÊı¾İ\\ÊµÑé1\\01stream.txt","r");
+	fp = fopen("E:\\å¤§æ•°æ®\\å®éªŒ1\\01stream.txt","r");
  
-	while((feof(fp) == 0) && (numbers < time))    //¶ÁÈ¡²é¿´Ê±¼äÖ®Ç°µÄÊı¾İÁ÷
+	while((feof(fp) == 0) && (numbers < time))    //è¯»å–æŸ¥çœ‹æ—¶é—´ä¹‹å‰çš„æ•°æ®æµ
 	{
 		fscanf(fp,"%d",&sign);
 //	    printf("sign = %d\n",sign);
  
-		if(sign == 1)    //Êı¾İÁ÷Îª1ÈëÁ´±í
+		if(sign == 1)    //æ•°æ®æµä¸º1å…¥é“¾è¡¨
 		{
-			if(numbers > (time - windows))    //ÓÃÓÚ¾«È·Í³¼Æ
+			if(numbers > (time - windows))    //ç”¨äºç²¾ç¡®ç»Ÿè®¡
 			{
 				count++;
 			}
  
-			p = (pbucket)malloc(sizeof(bucket));    //´æ½øÀ´¾ÍÉêÇëÒ»¸ö½Úµã
+			p = (pbucket)malloc(sizeof(bucket));    //å­˜è¿›æ¥å°±ç”³è¯·ä¸€ä¸ªèŠ‚ç‚¹
 			p->timestamp = i;
 			p->number = 1;
 			q = p;
 			if(h)
 			{
-				q->next = h;    //µÚÒ»¸öÖ±½Ó²åÔÚhºóÃæ£¬ÆäËûÊ¹ÓÃÍ·²å·¨
+				q->next = h;    //ç¬¬ä¸€ä¸ªç›´æ¥æ’åœ¨håé¢ï¼Œå…¶ä»–ä½¿ç”¨å¤´æ’æ³•
 			}
 			if(!h)
 			{
@@ -65,7 +65,7 @@ pbucket memory()
 			judge(h,1);
 		}
  
-		i++;    //ÓÃÓÚ¼ÇÂ¼Ê±¼ä´Á
+		i++;    //ç”¨äºè®°å½•æ—¶é—´æˆ³
 		numbers++;
 	}
  
@@ -86,11 +86,11 @@ int judge(pbucket h,int n)
 			if(q->number == n)
 			{
 				i++;
-				if(i == 3)    //µ±ÓĞÈı¸öÍ°ÀïÃæµÄÊıÒ»ÑùÊ±£¬½øĞĞºÏ²¢
+				if(i == 3)    //å½“æœ‰ä¸‰ä¸ªæ¡¶é‡Œé¢çš„æ•°ä¸€æ ·æ—¶ï¼Œè¿›è¡Œåˆå¹¶
 				{
-					r->number = n * 2;    //Í°ÀïÃæµÄÊı*2
-					r->next = q->next;    //É¾³ı½Úµã
-					free(q);    //ÊÍ·Å¿Õ¼ä
+					r->number = n * 2;    //æ¡¶é‡Œé¢çš„æ•°*2
+					r->next = q->next;    //åˆ é™¤èŠ‚ç‚¹
+					free(q);    //é‡Šæ”¾ç©ºé—´
 					n *= 2;
 					p = p->next;
 					judge(p,n);
@@ -110,7 +110,7 @@ int judge(pbucket h,int n)
 	}
 }
  
-void destory(pbucket *h)    //Ïú»ÙÁ´±í
+void destory(pbucket *h)    //é”€æ¯é“¾è¡¨
 {
 	pbucket p,q;
 	p=*h;

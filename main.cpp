@@ -3,15 +3,15 @@
  
 typedef struct bucket
 {
-	int number;    //保存1的个数
-	int timestamp;    //保存时间戳
+	int number;          //保存1的个数
+	int timestamp;       //保存时间戳
 	struct bucket *next;
 }bucket,*pbucket;
  
-int window = 10000;    //窗口大小
+int window = 10000;      //窗口大小
 int count[1000001];      //精确计数 
-int printFreq = 100000; //打印频率 
-bool deleted = false; //是否有桶被删除 
+int printFreq = 100000;  //打印频率 
+bool deleted = false;    //是否有桶被删除 
   
 int judge(pbucket h,int n);
 void deleteExcess(pbucket h, int time, int window);

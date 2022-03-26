@@ -11,7 +11,7 @@ typedef struct bucket
 int window = 10000;    //窗口大小
 int count[1000001];      //精确计数 
 int printFreq = 100000; //打印频率 
-int deletedTime = 999999999; //最后一个被删除的桶的时间
+int deletedTime = 999999999; //最后一个被删除的桶的时间 
   
 int judge(pbucket h,int n);
 void deleteExcess(pbucket h, int time, int window);
@@ -22,28 +22,10 @@ int DGIM(pbucket h, int time, int window)
 	int sum = 0;
 	while(q)
 	{
-		if(q->timestamp <= (time - window))
-		{
-			break;
-		}
 		int toAdd = q->number;
-		
-		/*
-		if(q->next && q->next->timestamp <= (time - window)) //这是针对桶不删除的情况 
-		{
+		if(q->next == NULL && deletedTime <=(time - window)) 
 			toAdd /= 2;
-		}
-		*/
-		
-		
-		if(deletedTime  <= (time - window) && q->next == NULL) 
-		{
-			toAdd /= 2;
-		}
-		
-		
 		sum += toAdd;
-
 		q = q->next;
 	}
 	return sum;
@@ -116,12 +98,10 @@ void deleteExcess(pbucket h, int time, int window) {
 		pNext = pCur->next;
 	}
 	
-	if(pNext)
-		deletedTime = pNext->timestamp;
-	
 	//最后一个桶超出window 
 	if(pNext && pNext->timestamp <= (time - window)) 
 	{
+		deletedTime = pNext->timestamp;
 		pCur->next = NULL;
 		free(pNext);
 	}

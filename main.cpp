@@ -3,15 +3,15 @@
  
 typedef struct bucket
 {
-	int number;    //保存1的个数
-	int timestamp;    //保存时间戳
+	int number;          //保存1的个数
+	int timestamp;       //保存时间戳
 	struct bucket *next;
 }bucket,*pbucket;
  
-int window = 10000;    //窗口大小
+int window = 10000;      //窗口大小
 int count[1000001];      //精确计数 
-int printFreq = 100000; //打印频率 
-int deletedTime = 999999999; //最后一个被删除的桶的时间
+int printFreq = 100000;  //打印频率 
+bool deleted = false;    //是否有桶被删除 
   
 int judge(pbucket h,int n);
 void deleteExcess(pbucket h, int time, int window);
@@ -22,34 +22,27 @@ int DGIM(pbucket h, int time, int window)
 	int sum = 0;
 	while(q)
 	{
-		if(q->timestamp <= (time - window))
-		{
-			break;
-		}
 		int toAdd = q->number;
-		
-		/*
-		if(q->next && q->next->timestamp <= (time - window)) //这是针对桶不删除的情况 
-		{
+		if(q->next == NULL && deleted) 
 			toAdd /= 2;
-		}
-		*/
-		
-		
-		if(deletedTime  <= (time - window)) 
-		{
-			toAdd /= 2;
-		}
-		
-		
 		sum += toAdd;
-
 		q = q->next;
 	}
 	return sum;
 }
+
+void print_buckets_at(int curTime,pbucket h){
+	if(!h) return;
+	printf("************************************\n");
+	printf("Timestamp = %d\n",curTime);
+	while(h){
+		printf("%d,%d->",h->timestamp,h->number);
+		h = h->next;
+	}
+	printf("null\n");
+}
  
-pbucket memory()
+pbucket memory(bool printbuckets=false)
 {
 	int sign;       //用于保存读出来的数
 	int time = 1;	//注意时间戳从1开始，且统计窗口范围为(time - window, time] 
@@ -60,6 +53,7 @@ pbucket memory()
 	pbucket p, h = NULL;
  
 	fp = fopen("01stream.txt","r");
+	FILE *analysis_fp = fopen("./results.txt","w");
  
 	while((feof(fp) == 0))    
 	{
@@ -79,7 +73,7 @@ pbucket memory()
 			{
 				p->next = NULL;
 			}
-			h = p;
+			h = p;		//头插法
 			judge(h,1);
 		}
 		else
@@ -87,20 +81,23 @@ pbucket memory()
 			count[time] = count[time - 1];
 		}
 		
- 		deleteExcess(h, time, window);
+ 		deleteExcess(h, time, window);	
 			
-		if(time % printFreq == 0)
+		if(time % printFreq == 0 && !printbuckets)
 		{
 			int prediction = DGIM(h, time, window);
 			printf("Timestamp = %d\n", time);
 			printf("\testimate: %d\n", prediction);
 			printf("\ttruth: %d\n", count[time] - count[time - window]);
 			printf("\n");
+			fprintf(analysis_fp,"%d\t%d\t%d\n",time,prediction,count[time] - count[time - window]);
 		}
-		
+		if(printbuckets &&(time == 10000 || time == 500000 || time == 1000000)){
+			print_buckets_at(time,h);
+		}
 		time++;    //时间流动
 	}
- 
+	fclose(analysis_fp);
 	return h;
 }
  
@@ -116,12 +113,10 @@ void deleteExcess(pbucket h, int time, int window) {
 		pNext = pCur->next;
 	}
 	
-	if(pNext)
-		deletedTime = pNext->timestamp;
-	
 	//最后一个桶超出window 
 	if(pNext && pNext->timestamp <= (time - window)) 
 	{
+		deleted = true;
 		pCur->next = NULL;
 		free(pNext);
 	}
@@ -182,8 +177,10 @@ void destory(pbucket *h)    //销毁链表
 int main()
 {
 	pbucket h,q;
-	h = memory();
+	h = memory(false);
+	q = memory(true);
 	destory(&h);
+	destory(&q);
  
 	return 0;
 }

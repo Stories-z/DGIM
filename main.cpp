@@ -3,16 +3,17 @@
  
 typedef struct bucket
 {
-	int number;    //±£´æ1µÄ¸öÊı
-	int timestamp;    //±£´æÊ±¼ä´Á
+	int number;    //ä¿å­˜1çš„ä¸ªæ•°
+	int timestamp;    //ä¿å­˜æ—¶é—´æˆ³
 	struct bucket *next;
 }bucket,*pbucket;
  
-int window = 10000;    //´°¿Ú´óĞ¡
-int count[1000001];      //¾«È·¼ÆÊı 
-int printFreq = 100000; //´òÓ¡ÆµÂÊ 
+int window = 10000;    //çª—å£å¤§å°
+int count[1000001];      //ç²¾ç¡®è®¡æ•° 
+int printFreq = 100000; //æ‰“å°é¢‘ç‡ 
  
 int judge(pbucket h,int n);
+void deleteExcess(pbucket h, int time, int window);
  
 int DGIM(pbucket h, int time, int window)
 {
@@ -25,13 +26,13 @@ int DGIM(pbucket h, int time, int window)
 			break;
 		}
 		int toAdd = q->number;
-		if(q->next && q->next->timestamp <= (time - window)) //ÕâÊÇÕë¶ÔÍ°²»É¾³ıµÄÇé¿ö 
+		if(q->next && q->next->timestamp <= (time - window)) //è¿™æ˜¯é’ˆå¯¹æ¡¶ä¸åˆ é™¤çš„æƒ…å†µ 
 		{
 			toAdd /= 2;
 		}
 		
 		/*
-		if(deletedTime  <= (time - window)) //Õë¶ÔÍ°É¾³ıµÄÇé¿ö£¬ĞèÒªÎ¬»¤±»É¾³ıµÄÍ°µÄtimestamp£¬¼ÇÆäÎªdeletedTime£¨×îºÃ³õÊ¼»¯deletedTimeÎªÒ»¸ö½Ï´óµÄÖµ£¬ÈçdeletedTime = 9999999999999£© 
+		if(deletedTime  <= (time - window)) //é’ˆå¯¹æ¡¶åˆ é™¤çš„æƒ…å†µï¼Œéœ€è¦ç»´æŠ¤è¢«åˆ é™¤çš„æ¡¶çš„timestampï¼Œè®°å…¶ä¸ºdeletedTimeï¼ˆæœ€å¥½åˆå§‹åŒ–deletedTimeä¸ºä¸€ä¸ªè¾ƒå¤§çš„å€¼ï¼Œå¦‚deletedTime = 9999999999999ï¼‰ 
 		{
 			toAdd /= 2;
 		}
@@ -46,8 +47,8 @@ int DGIM(pbucket h, int time, int window)
  
 pbucket memory()
 {
-	int sign;       //ÓÃÓÚ±£´æ¶Á³öÀ´µÄÊı
-	int time = 1;	//×¢ÒâÊ±¼ä´Á´Ó1¿ªÊ¼£¬ÇÒÍ³¼Æ´°¿Ú·¶Î§Îª(time - window, time] 
+	int sign;       //ç”¨äºä¿å­˜è¯»å‡ºæ¥çš„æ•°
+	int time = 1;	//æ³¨æ„æ—¶é—´æˆ³ä»1å¼€å§‹ï¼Œä¸”ç»Ÿè®¡çª—å£èŒƒå›´ä¸º(time - window, time] 
 	count[0] = 0;
  
 	FILE *fp;
@@ -60,10 +61,10 @@ pbucket memory()
 	{
 		fscanf(fp,"%d",&sign);
  
-		if(sign == 1)    //Êı¾İÁ÷Îª1ÈëÁ´±í
+		if(sign == 1)    //æ•°æ®æµä¸º1å…¥é“¾è¡¨
 		{
 			count[time] = count[time - 1] + 1;
-			p = (pbucket)malloc(sizeof(bucket));   //´æ½øÀ´¾ÍÉêÇëÒ»¸ö½Úµã
+			p = (pbucket)malloc(sizeof(bucket));   //å­˜è¿›æ¥å°±ç”³è¯·ä¸€ä¸ªèŠ‚ç‚¹
 			p->timestamp = time;
 			p->number = 1;
 			if(h)
@@ -81,7 +82,9 @@ pbucket memory()
 		{
 			count[time] = count[time - 1];
 		}
- 
+		
+ 		deleteExcess(h, time, window);
+			
 		if(time % printFreq == 0)
 		{
 			int prediction = DGIM(h, time, window);
@@ -91,13 +94,30 @@ pbucket memory()
 			printf("\n");
 		}
 		
-		time++;    //Ê±¼äÁ÷¶¯
+		time++;    //æ—¶é—´æµåŠ¨
 	}
  
 	return h;
 }
  
- 
+void deleteExcess(pbucket h, int time, int window) {
+	pbucket pCur, pNext;
+	pCur = h;
+	pNext = pCur->next;
+	
+//	æŒ‡é’ˆç§»åŠ¨åˆ°å€’æ•°ç¬¬äºŒä¸ªæ¡¶ 
+	while (pNext->next) {
+		pCur = pCur->next;
+		pNext = pCur->next;
+	}
+	
+//	æœ€åä¸€ä¸ªæ¡¶è¶…å‡ºwindows 
+	if (pNext->timestamp < time - window) {
+		pCur->next = pNext->next;
+		free(pNext);
+	}
+}
+
 int judge(pbucket h,int n)
 {
 	pbucket p,q,r;
@@ -112,11 +132,11 @@ int judge(pbucket h,int n)
 			if(q->number == n)
 			{
 				i++;
-				if(i == 3)    //µ±ÓĞÈı¸öÍ°ÀïÃæµÄÊıÒ»ÑùÊ±£¬½øĞĞºÏ²¢
+				if(i == 3)    //å½“æœ‰ä¸‰ä¸ªæ¡¶é‡Œé¢çš„æ•°ä¸€æ ·æ—¶ï¼Œè¿›è¡Œåˆå¹¶
 				{
-					r->number = n * 2;    //Í°ÀïÃæµÄÊı*2
-					r->next = q->next;    //É¾³ı½Úµã
-					free(q);    //ÊÍ·Å¿Õ¼ä
+					r->number = n * 2;    //æ¡¶é‡Œé¢çš„æ•°*2
+					r->next = q->next;    //åˆ é™¤èŠ‚ç‚¹
+					free(q);    //é‡Šæ”¾ç©ºé—´
 					n *= 2;
 					p = p->next;
 					judge(p,n);
@@ -137,7 +157,7 @@ int judge(pbucket h,int n)
 	return 0;
 }
  
-void destory(pbucket *h)    //Ïú»ÙÁ´±í
+void destory(pbucket *h)    //é”€æ¯é“¾è¡¨
 {
 	pbucket p,q;
 	p=*h;

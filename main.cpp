@@ -36,7 +36,7 @@ int DGIM(pbucket h, int time, int window)
 		*/
 		
 		
-		if(deletedTime  <= (time - window)) 
+		if(deletedTime  <= (time - window) && q->next == NULL) 
 		{
 			toAdd /= 2;
 		}

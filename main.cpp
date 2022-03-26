@@ -53,7 +53,7 @@ pbucket memory(bool printbuckets=false)
 	pbucket p, h = NULL;
  
 	fp = fopen("01stream.txt","r");
-	FILE *analysis_fp = fopen("./results.txt","w");
+	FILE *analysis_fp = NULL;
  
 	while((feof(fp) == 0))    
 	{
@@ -85,6 +85,7 @@ pbucket memory(bool printbuckets=false)
 			
 		if(time % printFreq == 0 && !printbuckets)
 		{
+			if(!analysis_fp) analysis_fp = fopen("./results.txt","w");
 			int prediction = DGIM(h, time, window);
 			printf("Timestamp = %d\n", time);
 			printf("\testimate: %d\n", prediction);
@@ -97,7 +98,7 @@ pbucket memory(bool printbuckets=false)
 		}
 		time++;    //时间流动
 	}
-	fclose(analysis_fp);
+	if(analysis_fp ) fclose(analysis_fp);
 	return h;
 }
  

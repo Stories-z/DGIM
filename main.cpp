@@ -110,7 +110,7 @@ void deleteExcess(pbucket h, int time, int window) {
 	pNext = pCur->next;
 	
 	//pCur指针移动到倒数第二个桶 
-	while (pNext && pNext->next) 
+	while(pNext && pNext->next) 
 	{
 		pCur = pCur->next;
 		pNext = pCur->next;
@@ -120,7 +120,7 @@ void deleteExcess(pbucket h, int time, int window) {
 		deletedTime = pNext->timestamp;
 	
 	//最后一个桶超出window 
-	if (pNext && pNext->timestamp <= (time - window)) 
+	if(pNext && pNext->timestamp <= (time - window)) 
 	{
 		pCur->next = NULL;
 		free(pNext);

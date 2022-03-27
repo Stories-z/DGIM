@@ -1,5 +1,3 @@
-from cProfile import label
-from calendar import c
 from matplotlib import markers
 import matplotlib.pyplot as plt
 import numpy as np
@@ -15,4 +13,5 @@ plt.ylabel("Count")
 plt.title("error analysis")
 plt.legend()
 plt.show()
+#plt.show()
 plt.savefig("error_analysis.png")

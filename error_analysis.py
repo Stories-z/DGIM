@@ -1,5 +1,3 @@
-from cProfile import label
-from calendar import c
 from matplotlib import markers
 import matplotlib.pyplot as plt
 import numpy as np
@@ -13,5 +11,5 @@ plt.plot(data[:,0],data[:,2],c='red',label='truth',marker='o')
 plt.xlabel('Timestamp')
 plt.ylabel("Count")
 plt.title("error analysis")
-plt.show()
+#plt.show()
 plt.savefig("error_analysis.png")

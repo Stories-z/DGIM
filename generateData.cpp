@@ -7,6 +7,7 @@ using namespace std;
 const int count = 1000000;
 int binaryArr2[7][count];  // row: i-th bit, column: j-th time
 
+// generate Integers
 void generateData(char *fileName, int a, int b, int count=1000000) {
 	FILE *fp = fopen(fileName, "w");
 	printf("Writing integer to file...\n");
@@ -20,6 +21,7 @@ void generateData(char *fileName, int a, int b, int count=1000000) {
 	return;
 }
 
+// write binary to file
 void binary2file(char *fileName, int binaryArr[], int len) {
 	FILE *fp = fopen(fileName, "w");
 	for (int j = 0; j < len; j++) {
@@ -30,6 +32,7 @@ void binary2file(char *fileName, int binaryArr[], int len) {
 	return;
 }
 
+// transfer decimal to 7 binary streams
 void int2binaryStream(char *fileName, const int count=1000000) {
 	FILE *fp = fopen(fileName, "r");
 	if (fp == NULL) {
@@ -42,7 +45,7 @@ void int2binaryStream(char *fileName, const int count=1000000) {
 
 	while(!feof(fp)){
 		fscanf(fp,"%d ",&integer); 
-//		transfer integer to binary
+//		decode integer to binary
 		for (int i = 0; i < 7; i++) {
 			int b = integer % 2;
 			integer /= 2;
@@ -55,7 +58,7 @@ void int2binaryStream(char *fileName, const int count=1000000) {
 		printf("Error");
 	}
 	
-//	write binary to files
+//	write binary to 7 files
 	char biFileName[30];
 	for (int i = 0; i < 7; i++) {
 		sprintf(biFileName, "Binary_100w_%d.txt", i);
@@ -67,6 +70,8 @@ void int2binaryStream(char *fileName, const int count=1000000) {
 
 int main(){
 	char *fileName = "Integer_100w.txt";
+//	random generate integer
 	generateData(fileName, 0, 127, count);
+//	decode integer to binary streams
 	int2binaryStream(fileName, count);
 }

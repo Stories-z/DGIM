@@ -1,19 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cmath>
-#include<vector>
 
 typedef struct bucket
 {
-	int number;          //ä¿å­˜1çš„ä¸ªæ•°
-	int timestamp;       //ä¿å­˜æ—¶é—´æˆ³
+	int number;          //±£´æ1µÄ¸öÊı
+	int timestamp;       //±£´æÊ±¼ä´Á
 	struct bucket *next;
 }bucket,*pbucket;
  
-int window = 10000;      //çª—å£å¤§å°
-int count[1000001];      //ç²¾ç¡®è®¡æ•° 
-int printFreq = 100000;  //æ‰“å°é¢‘ç‡ 
-bool deleted = false;    //æ˜¯å¦æœ‰æ¡¶è¢«åˆ é™¤ 
+int window = 10000;      //´°¿Ú´óĞ¡
+int count[1000001];      //¾«È·¼ÆÊı 
+int printFreq = 100000;  //´òÓ¡ÆµÂÊ 
+bool deleted = false;    //ÊÇ·ñÓĞÍ°±»É¾³ı 
 
 int judge(pbucket h,int n)
 {
@@ -29,11 +28,11 @@ int judge(pbucket h,int n)
 			if(q->number == n)
 			{
 				i++;
-				if(i == 3)    //å½“æœ‰ä¸‰ä¸ªæ¡¶é‡Œé¢çš„æ•°ä¸€æ ·æ—¶ï¼Œè¿›è¡Œåˆå¹¶
+				if(i == 3)    //µ±ÓĞÈı¸öÍ°ÀïÃæµÄÊıÒ»ÑùÊ±£¬½øĞĞºÏ²¢
 				{
-					r->number = n * 2;    //æ¡¶é‡Œé¢çš„æ•°*2
-					r->next = q->next;    //åˆ é™¤èŠ‚ç‚¹
-					free(q);    //é‡Šæ”¾ç©ºé—´
+					r->number = n * 2;    //Í°ÀïÃæµÄÊı*2
+					r->next = q->next;    //É¾³ı½Úµã
+					free(q);    //ÊÍ·Å¿Õ¼ä
 					n *= 2;
 					p = p->next;
 					judge(p,n);
@@ -59,13 +58,13 @@ void deleteExcess(pbucket h, int time, int window) {
 	pCur = h;
 	pNext = pCur->next;
 	
-	//pCuræŒ‡é’ˆç§»åŠ¨åˆ°å€’æ•°ç¬¬äºŒä¸ªæ¡¶ 
+	//pCurÖ¸ÕëÒÆ¶¯µ½µ¹ÊıµÚ¶ş¸öÍ° 
 	while(pNext && pNext->next) 
 	{
 		pCur = pCur->next;
 		pNext = pCur->next;
 	}
-	//æœ€åä¸€ä¸ªæ¡¶è¶…å‡ºwindow 
+	//×îºóÒ»¸öÍ°³¬³öwindow 
 	if(pNext && pNext->timestamp <= (time - window)) 
 	{
 		deleted = true;
@@ -89,7 +88,7 @@ int DGIM(pbucket h, int time, int window)
 	return sum;
 }
 
-void print_buckets_at(int curTime,std::vector<pbucket> &h,int n){
+void print_buckets_at(int curTime,pbucket * h,int n){
 	printf("************************************\n");
 	printf("Timestamp = %d\n",curTime);
 	for(int i=0;i<n;i++){
@@ -104,12 +103,12 @@ void print_buckets_at(int curTime,std::vector<pbucket> &h,int n){
 }
 
 
-std::vector<pbucket>  memory(bool printbuckets=false)
+void memory(pbucket * h, bool printbuckets=false)
 { 
-	int sign; 		//ç”¨äºä¿å­˜01
-	int integer;    //ç”¨äºä¿å­˜æ•´æ•°
-	int time = 1;	//æ³¨æ„æ—¶é—´æˆ³ä»1å¼€å§‹ï¼Œä¸”ç»Ÿè®¡çª—å£èŒƒå›´ä¸º(time - window, time] 
- 	count[0] = 0;   //ç²¾ç¡®è®¡æ•° 
+	int sign; 		//ÓÃÓÚ±£´æ01
+	int integer;    //ÓÃÓÚ±£´æÕûÊı
+	int time = 1;	//×¢ÒâÊ±¼ä´Á´Ó1¿ªÊ¼£¬ÇÒÍ³¼Æ´°¿Ú·¶Î§Îª(time - window, time] 
+ 	count[0] = 0;   //¾«È·¼ÆÊı 
  	
 	FILE *fp[7];
 	char biFileName[7][30];
@@ -122,10 +121,9 @@ std::vector<pbucket>  memory(bool printbuckets=false)
 	FILE *ifp = fopen("Integer_100w.txt", "r");
 		
 	pbucket p;
-	std::vector<pbucket> h(7,NULL);
 	
-	// for(int i = 0; i < 7; i++)
-	// 	h[i] = NULL;
+	for(int i = 0; i < 7; i++)
+	 	h[i] = NULL;
  
 	FILE *analysis_fp = NULL;
  
@@ -135,9 +133,9 @@ std::vector<pbucket>  memory(bool printbuckets=false)
 		for(int b = 0; b < 7; b++) 
  		{
 		 	fscanf(fp[b], "%d", &sign);
-			if(sign == 1)    //æ•°æ®æµä¸º1å…¥é“¾è¡¨
+			if(sign == 1)    //Êı¾İÁ÷Îª1ÈëÁ´±í
 			{
-				p = (pbucket)malloc(sizeof(bucket));   //å­˜è¿›æ¥å°±ç”³è¯·ä¸€ä¸ªèŠ‚ç‚¹
+				p = (pbucket)malloc(sizeof(bucket));   //´æ½øÀ´¾ÍÉêÇëÒ»¸ö½Úµã
 				p->timestamp = time;
 				p->number = 1;
 				if(h[b])
@@ -148,7 +146,7 @@ std::vector<pbucket>  memory(bool printbuckets=false)
 				{
 					p->next = NULL;
 				}
-				h[b] = p;		//å¤´æ’æ³•
+				h[b] = p;		//Í·²å·¨
 				judge(h[b],1);
 			}
 
@@ -170,16 +168,15 @@ std::vector<pbucket>  memory(bool printbuckets=false)
 			fprintf(analysis_fp,"%d\t%d\t%d\n",time,prediction,count[time] - count[time - window]);
 		}
 		if(printbuckets &&(time == 10000 || time == 500000 || time == 1000000)){
-			print_buckets_at(time,h,7);
+			print_buckets_at(time, h, 7);
 		}
-		time++;    //æ—¶é—´æµåŠ¨
+		time++;    //Ê±¼äÁ÷¶¯
 	}
 	for(int i = 0; i < 7; i++) fclose(fp[i]);
 	if(analysis_fp) fclose(analysis_fp);
-	return h;
 }
 
-void destory(pbucket *h)    //é”€æ¯é“¾è¡¨
+void destory(pbucket *h)    //Ïú»ÙÁ´±í
 {
 	pbucket p,q;
 	p=*h;
@@ -193,14 +190,14 @@ void destory(pbucket *h)    //é”€æ¯é“¾è¡¨
 }
 
 void task(bool printbuckets=false){
-	std::vector<pbucket> h = memory(printbuckets);
+	pbucket h[7];
+	memory(h, printbuckets);
 	for(int i = 0; i < 7; i++)
 		destory(&(h[i]));
 }
  
 int main()
 {
-	
 	task(false);
 	task(true);
  	

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cmath>
+#include<vector>
 
 typedef struct bucket
 {
@@ -88,19 +89,22 @@ int DGIM(pbucket h, int time, int window)
 	return sum;
 }
 
-void print_buckets_at(int curTime,pbucket h){
-	if(!h) return;
+void print_buckets_at(int curTime,std::vector<pbucket> &h,int n){
 	printf("************************************\n");
 	printf("Timestamp = %d\n",curTime);
-	while(h){
-		printf("%d,%d->",h->timestamp,h->number);
-		h = h->next;
+	for(int i=0;i<n;i++){
+		pbucket p = h[i];
+		while(p){
+			printf("%d,%d->",p->timestamp,p->number);
+			p = p->next;
+		}
+		printf("null\n");
 	}
-	printf("null\n");
+	
 }
 
 
-pbucket * memory(bool printbuckets=false)
+std::vector<pbucket>  memory(bool printbuckets=false)
 { 
 	int sign; 		//用于保存01
 	int integer;    //用于保存整数
@@ -118,10 +122,10 @@ pbucket * memory(bool printbuckets=false)
 	FILE *ifp = fopen("Integer_100w.txt", "r");
 		
 	pbucket p;
-	pbucket h[7];
+	std::vector<pbucket> h(7,NULL);
 	
-	for(int i = 0; i < 7; i++)
-		h[i] = NULL;
+	// for(int i = 0; i < 7; i++)
+	// 	h[i] = NULL;
  
 	FILE *analysis_fp = NULL;
  
@@ -165,9 +169,9 @@ pbucket * memory(bool printbuckets=false)
 			printf("\n");
 			fprintf(analysis_fp,"%d\t%d\t%d\n",time,prediction,count[time] - count[time - window]);
 		}
-		//if(printbuckets &&(time == 10000 || time == 500000 || time == 1000000)){
-		//	print_buckets_at(time,h);
-		//}
+		if(printbuckets &&(time == 10000 || time == 500000 || time == 1000000)){
+			print_buckets_at(time,h,7);
+		}
 		time++;    //时间流动
 	}
 	for(int i = 0; i < 7; i++) fclose(fp[i]);
@@ -187,16 +191,18 @@ void destory(pbucket *h)    //销毁链表
 	}
 	*h=NULL;
 }
+
+void task(bool printbuckets=false){
+	std::vector<pbucket> h = memory(printbuckets);
+	for(int i = 0; i < 7; i++)
+		destory(&(h[i]));
+}
  
 int main()
 {
 	
-	pbucket *h,q;
-	h = memory(false);
-	//q = memory(true);
-	for(int i = 0; i < 7; i++)
-		destory(&(h[i]));
-	
+	task(false);
+	task(true);
  	
 	return 0;
 }

@@ -71,7 +71,7 @@ void int2binaryStream(char *fileName, const int count=1000000) {
 int main(){
 	char *fileName = "Integer_100w.txt";
 //	random generate integer
-	generateData(fileName, 0, 127, count);
+	generateData(fileName, 1, 127, count);
 //	decode integer to binary streams
 	int2binaryStream(fileName, count);
 }
